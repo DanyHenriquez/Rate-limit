@@ -1,7 +1,7 @@
 {
   "name": "prezto/rate-limit",
   "type": "library",
-  "description": "Php I18n",
+  "description": "PSR-7 rate limit implementation",
   "keywords": ["PSR-7", "middleware", "rate limit"],
   "homepage": "https://github.com/Prezto/Rate-limit",
   "authors": [
