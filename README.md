@@ -1,5 +1,5 @@
 # Rate-limit
-PSR-7 Rate limiting using redis.
+PSR-7 Rate limiting using redis. predis is not needed for this middleware. It uses Tinyredisclient by ptrofimov.
 
 ## Usage 
 The last constructor argument is the redis password. This is option. When it is not provided the middleware will connect without authenticating.
