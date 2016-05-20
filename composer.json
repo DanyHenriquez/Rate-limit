@@ -1,0 +1,20 @@
+{
+  "name": "prezto/rate-limit",
+  "type": "library",
+  "description": "Php I18n",
+  "keywords": ["PSR-7", "middleware", "rate limit"],
+  "homepage": "https://github.com/Prezto/Rate-limit",
+  "authors": [
+    {
+      "name": "Dany Henriquez",
+      "email": "dany@henriquez.eu"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "fire015/flintstone": "^2.0"
+  },
+  "autoload": {
+    "psr-4": { "Prezto\\RateLimit\\": "src/" }
+  }
+}
