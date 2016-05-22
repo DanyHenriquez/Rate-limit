@@ -10,6 +10,8 @@ namespace Prezto\RateLimit;
 
 use Flintstone\Flintstone;
 
+use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 
 class RateLimitMiddleware
 {
@@ -34,6 +36,8 @@ class RateLimitMiddleware
 
     protected $seconds = 10;
 
+    protected $limitHandler = null;
+
     public function __construct($host = 'localhost', $port = '6379', $pass = null)
     {
         $this->host = $host;
@@ -44,6 +48,12 @@ class RateLimitMiddleware
 
         if ($this->pass !== null)
             $this->auth();
+
+        $this->limitHandler = function ($request, $response) {
+            $response = $response->withStatus(429);
+            $response->getBody()->write("Rate limit reached.");
+            return $response;
+        };
     }
 
     public function setRequestsPerSecond($maxRequests, $seconds)
@@ -66,17 +76,22 @@ class RateLimitMiddleware
         $this->handle->auth($this->pass);
     }
 
-    public function __invoke($request, $response, $next)
+    public function setHandler($handler)
     {
-        if (count($this->handle->keys(sprintf("%s*", str_replace('.', '', $_SERVER['REMOTE_ADDR'])))) >= $this->maxRequests)
-            $response = $response->withStatus(429);
-        else {
+        $this->limitHandler = $handler;
+    }
+
+    public function __invoke(Request $request, Response $response, $next)
+    {
+        if (count($this->handle->keys(sprintf("%s*", str_replace('.', '', $_SERVER['REMOTE_ADDR'])))) >= $this->maxRequests) {
+            $handler = $this->limitHandler;
+            return $handler($request, $response);
+        } else {
             $key = sprintf("%s%s", str_replace('.', '', $_SERVER['REMOTE_ADDR']), mt_rand());
             $this->handle->set($key, time());
             $this->handle->expire($key, $this->seconds);
+            $response = $next($request, $response);
         }
-
-        $response = $next($request, $response);
 
         return $response;
     }
