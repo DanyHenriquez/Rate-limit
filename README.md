@@ -13,4 +13,14 @@ In this example the client is allowed to make 60 requests in 30 seconds.
 $rateLimitMiddleware->setRequestsPerSecond(60, 30);
 ```
 
-When the request limit has been reached the request statuscode is set to 429.
+When the request limit has been reached the request statuscode is set to 429 by defaukt.
+
+## Custom handler when limit has been reached.
+
+```php
+$rateLimitMiddleware->setHandler(function ($request, $response) {
+            $response = $response->withStatus(429);
+            $response->getBody()->write("Rate limit reached.");
+            return $response;
+        });
+```
