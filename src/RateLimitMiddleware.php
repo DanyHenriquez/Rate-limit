@@ -99,11 +99,9 @@ class RateLimitMiddleware
         if ($this->storedRequestsCount($uniqueID) >= $this->maxRequests) {
             $handler = $this->limitHandler;
             return $handler($request, $response);
-        } else {
-            $this->storeNewRequest($uniqueID);
-            $response = $next($request, $response);
         }
 
-        return $response;
+        $this->storeNewRequest($uniqueID);
+        return $next($request, $response);
     }
 }
