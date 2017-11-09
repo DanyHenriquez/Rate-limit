@@ -68,9 +68,6 @@ class RateLimitMiddleware
         $this->seconds = $seconds;
     }
 
-    /**
-     *
-     */
     public function auth()
     {
         $this->handle->auth($this->pass);
