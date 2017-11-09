@@ -81,15 +81,26 @@ class RateLimitMiddleware
         $this->limitHandler = $handler;
     }
 
+    protected function storedRequestsCount($uniqueID)
+    {
+        return count($this->handle->keys(sprintf("%s*", $uniqueID)));
+    }
+
+    protected function storeNewRequest($uniqueID)
+    {
+        $key = sprintf("%s%s", $uniqueID, mt_rand());
+        $this->handle->set($key, time());
+        $this->handle->expire($key, $this->seconds);
+    }
+
     public function __invoke(Request $request, Response $response, $next)
     {
-        if (count($this->handle->keys(sprintf("%s*", $_SERVER['REMOTE_ADDR']))) >= $this->maxRequests) {
+        $uniqueID = $_SERVER['REMOTE_ADDR'];
+        if ($this->storedRequestsCount($uniqueID) >= $this->maxRequests) {
             $handler = $this->limitHandler;
             return $handler($request, $response);
         } else {
-            $key = sprintf("%s%s", $_SERVER['REMOTE_ADDR'], mt_rand());
-            $this->handle->set($key, time());
-            $this->handle->expire($key, $this->seconds);
+            $this->storeNewRequest($uniqueID);
             $response = $next($request, $response);
         }
 
