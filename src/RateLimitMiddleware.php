@@ -71,14 +71,15 @@ class RateLimitMiddleware
 
         $this->maxRequests = $maxRequests;
         $this->seconds = $seconds;
+        return $this;
     }
 
     public function auth()
     {
-        if ($this->storageType !== self::REDIS) {
-            return;
+        if ($this->storageType === self::REDIS) {
+            $this->handle->auth($this->pass);
         }
-        $this->handle->auth($this->pass);
+        return $this;
     }
 
     public function useMemcache()
@@ -86,17 +87,20 @@ class RateLimitMiddleware
         $this->storageType = self::MEMCACHE;
         $this->handle = new \Memcache;
         $this->handle->connect($this->host, intval($this->port));
+        return $this;
     }
 
     public function useRedis()
     {
         $this->storageType = self::REDIS;
         $this->handle = new \TinyRedisClient(sprintf("%s:%s", $this->host, $this->port));
+        return $this;
     }
 
     public function setHandler($handler)
     {
         $this->limitHandler = $handler;
+        return $this;
     }
 
     protected function storedRequestsCount($uniqueID)
