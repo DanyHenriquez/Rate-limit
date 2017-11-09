@@ -83,11 +83,11 @@ class RateLimitMiddleware
 
     public function __invoke(Request $request, Response $response, $next)
     {
-        if (count($this->handle->keys(sprintf("%s*", str_replace('.', '', $_SERVER['REMOTE_ADDR'])))) >= $this->maxRequests) {
+        if (count($this->handle->keys(sprintf("%s*", $_SERVER['REMOTE_ADDR']))) >= $this->maxRequests) {
             $handler = $this->limitHandler;
             return $handler($request, $response);
         } else {
-            $key = sprintf("%s%s", str_replace('.', '', $_SERVER['REMOTE_ADDR']), mt_rand());
+            $key = sprintf("%s%s", $_SERVER['REMOTE_ADDR'], mt_rand());
             $this->handle->set($key, time());
             $this->handle->expire($key, $this->seconds);
             $response = $next($request, $response);
