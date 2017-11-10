@@ -1,5 +1,5 @@
 # Rate-limit
-PSR-7 Rate limiting using redis. predis is not needed for this middleware. It uses Tinyredisclient by ptrofimov.
+PSR-7 Rate limiting using Redis or Memcache. predis is not needed for this middleware. It uses Tinyredisclient by ptrofimov.
 
 ## Usage 
 The last constructor argument is the redis password. This is option. When it is not provided the middleware will connect without authenticating.
@@ -13,7 +13,13 @@ In this example the client is allowed to make 60 requests in 30 seconds.
 $rateLimitMiddleware->setRequestsPerSecond(60, 30);
 ```
 
-When the request limit has been reached the request statuscode is set to 429 by defaukt.
+When the request limit has been reached the request statuscode is set to 429 by default.
+
+By default the Redis is used as a storage. To use Memcache instead:
+
+```php
+$rateLimitMiddleware->useMemcache();
+```
 
 ## Custom handler when limit has been reached.
 
