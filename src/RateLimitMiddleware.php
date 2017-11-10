@@ -33,6 +33,8 @@ class RateLimitMiddleware
      */
     public $pass = null;
 
+    protected $enabled = false;
+
     protected $handle = null;
 
     protected $maxRequests = 1;
@@ -84,22 +86,47 @@ class RateLimitMiddleware
 
     public function useMemcache()
     {
+        $this->enabled = false;
         $this->storageType = self::MEMCACHE;
+        if (!class_exists('\Memcache')) {
+            return $this;
+        }
         $this->handle = new \Memcache;
-        $this->handle->connect($this->host, intval($this->port));
+        $connected = @$this->handle->connect($this->host, intval($this->port));
+        if ($connected) {
+            $this->enabled = true;
+        }
         return $this;
     }
 
     public function useRedis()
     {
+        $this->enabled = false;
         $this->storageType = self::REDIS;
-        $this->handle = new \TinyRedisClient(sprintf("%s:%s", $this->host, $this->port));
+        $address = sprintf("%s:%s", $this->host, $this->port);
+        if (@stream_socket_client($address) === false) {
+            return $this;
+        }
+        $this->handle = new \TinyRedisClient($address);
+        $this->enabled = true;
         return $this;
     }
 
     public function setHandler($handler)
     {
         $this->limitHandler = $handler;
+        return $this;
+    }
+
+    public function enable()
+    {
+        $this->enabled = true;
+        return $this;
+    }
+
+    public function disable()
+    {
+        $this->enabled = false;
         return $this;
     }
 
@@ -144,6 +171,10 @@ class RateLimitMiddleware
 
     public function __invoke(Request $request, Response $response, $next)
     {
+        if (!$this->enabled) {
+            return $next($request, $response);
+        }
+
         $uniqueID = $_SERVER['REMOTE_ADDR'];
         $requestsCount = $this->storedRequestsCount($uniqueID);
 
