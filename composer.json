@@ -1,13 +1,17 @@
 {
-  "name": "prezto/rate-limit",
+  "name": "startailcoon/rate-limit",
   "type": "library",
   "description": "PSR-7 rate limit implementation",
   "keywords": ["PSR-7", "middleware", "rate limit"],
-  "homepage": "https://github.com/Prezto/Rate-limit",
+  "homepage": "https://github.com/startailcoon/Rate-limit",
   "authors": [
     {
       "name": "Dany Henriquez",
       "email": "dany@henriquez.eu"
+    },
+    {
+      "name": "Startail the 'Coon'",
+      "email": "startail@coondesign.eu"
     }
   ],
   "require": {
@@ -15,6 +19,6 @@
     "ptrofimov/tinyredisclient": "^1.1"
   },
   "autoload": {
-    "psr-4": { "Prezto\\RateLimit\\": "src/" }
+    "psr-4": { "startailcoon\\RateLimit\\": "src/" }
   }
 }
