@@ -1,5 +1,5 @@
 {
-  "name": "startailcoon/rate-limit",
+  "name": "CoonDesign/rate-limit",
   "type": "library",
   "description": "PSR-7 rate limit implementation",
   "keywords": ["PSR-7", "middleware", "rate limit"],
@@ -19,6 +19,6 @@
     "ptrofimov/tinyredisclient": "^1.1"
   },
   "autoload": {
-    "psr-4": { "startailcoon\\RateLimit\\": "src/" }
+    "psr-4": { "CoonDesign\\RateLimit\\": "src/" }
   }
 }
